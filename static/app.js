@@ -199,6 +199,7 @@ function statusText(s){
     if(s=="pending") return "排队中";
     if(s=="running") return "生成中";
     if(s=="done")    return "已完成";
+    if(s=="loading") return "加载模型中";
     if(s=="failed")  return "失败";
     return s;
 }

@@ -201,14 +201,24 @@ async def generate_image(req: GenerateRequest, background_tasks: BackgroundTasks
     }
     async with task_lock:
         tasks[task_id] = task_info
-
+    
     async def do_generate():
         async with task_lock:
-            tasks[task_id]["status"] = "running"
+            tasks[task_id]["status"] = "pending"
         try:
             cpu_offload = check_cuda_offload()
+            global pipe, model_loaded
+
+            # 只加载一次pipeline
+            if not model_loaded or pipe is None:
+                async with task_lock:
+                    tasks[task_id]["status"] = "loading"
+                pipe = safe_load_pipe(app.state.model_path, cpu_offload)
+                model_loaded = True
             # pipeline 串行锁!
             async with pipe_lock:
+                async with task_lock:
+                    tasks[task_id]["status"] = "running"
                 await asyncio.get_event_loop().run_in_executor(
                     None, _generate,
                     req.prompt, req.negative_prompt, req.aspect_ratio, req.num_inference_steps,
@@ -225,7 +235,6 @@ async def generate_image(req: GenerateRequest, background_tasks: BackgroundTasks
                 except Exception as e:
                     print(f"Callback failed: {e}")
         except Exception as e:
-            raise e
             async with task_lock:
                 tasks[task_id]["status"] = "failed"
                 tasks[task_id]["detail"] = str(e)
