@@ -207,14 +207,6 @@ async def generate_image(req: GenerateRequest, background_tasks: BackgroundTasks
             tasks[task_id]["status"] = "pending"
         try:
             cpu_offload = check_cuda_offload()
-            global pipe, model_loaded
-
-            # 只加载一次pipeline
-            if not model_loaded or pipe is None:
-                async with task_lock:
-                    tasks[task_id]["status"] = "loading"
-                pipe = safe_load_pipe(app.state.model_path, cpu_offload)
-                model_loaded = True
             # pipeline 串行锁!
             async with pipe_lock:
                 async with task_lock:
