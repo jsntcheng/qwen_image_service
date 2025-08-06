@@ -151,7 +151,7 @@ def safe_load_pipe(model_path, cpu_offload):
     )
     
     pipe = DiffusionPipeline.from_pretrained(
-        "/root/autodl-tmp/Qwen-Image",
+        app.state.model_path,
         transformer=transformer,
         torch_dtype=torch.bfloat16,
         # cache_dir="/root/autodl-tmp/Qwen-Image",
