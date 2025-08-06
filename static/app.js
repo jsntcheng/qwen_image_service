@@ -162,7 +162,9 @@ async function loadHistory(skip){
         table.innerHTML = "";
         for(const t of items){
             let time = "--";
-            try{ time = new Date(t.output_file?getCTime(t.output_file):null).toLocaleString(); }catch(e){}
+            if(t.ctime){
+                time = new Date(t.ctime*1000).toLocaleString();
+            }
             let pic = t.status=="done" && t.result_url ? `<a href="${t.result_url}" target="_blank"><img src="${t.result_url}"></a>` : `<span class='fail'>${t.detail||""}</span>`;
             table.innerHTML += 
                 `<tr>

@@ -289,7 +289,13 @@ async def get_history(skip: int = 0, limit: int = 30):
             dict(task_id=k, **v) 
             for k,v in tasks.items() if v['status'] in ('done','failed')
         ]
-        result.sort(key=lambda x: os.path.getctime(x['output_file']) if os.path.exists(x['output_file']) else 0, reverse=True)
+        # 核心修改：计算ctime
+        for x in result:
+            if os.path.exists(x['output_file']):
+                x['ctime'] = os.path.getctime(x['output_file'])
+            else:
+                x['ctime'] = None
+        result.sort(key=lambda x: x['ctime'] or 0, reverse=True)
     return {
         "total": len(result),
         "items": result[skip:skip+limit]
