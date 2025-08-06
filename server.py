@@ -225,6 +225,7 @@ async def generate_image(req: GenerateRequest, background_tasks: BackgroundTasks
                 except Exception as e:
                     print(f"Callback failed: {e}")
         except Exception as e:
+            raise e
             async with task_lock:
                 tasks[task_id]["status"] = "failed"
                 tasks[task_id]["detail"] = str(e)
