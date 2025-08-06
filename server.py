@@ -173,17 +173,16 @@ def _generate(
         model_loaded = True
     width, height = aspect_ratios.get(aspect_ratio, (1664, 928))
     p_prompt = prompt + positive_magic.get(language, positive_magic["en"])
-    with torch.inference_mode():
-        image = pipe(
-            prompt=p_prompt,
-            negative_prompt=negative_prompt,
-            width=width,
-            height=height,
-            num_inference_steps=num_inference_steps,
-            true_cfg_scale=true_cfg_scale,
-            generator=Generator(device="cuda" if torch.cuda.is_available() else "cpu").manual_seed(seed)
-        ).images[0]
-        image.save(output_file)
+    image = pipe(
+        prompt=p_prompt,
+        negative_prompt=negative_prompt,
+        width=width,
+        height=height,
+        num_inference_steps=num_inference_steps,
+        true_cfg_scale=true_cfg_scale,
+        generator=Generator(device="cuda" if torch.cuda.is_available() else "cpu").manual_seed(seed)
+    ).images[0]
+    image.save(output_file)
 
 ###############################################################################
 # API - 1. 生成任务接口 (异步/排队)
