@@ -54,22 +54,29 @@ genForm.onsubmit = async function(e){
 };
 
 function pollTask(task_id){
+    if(polling) {
+        clearInterval(polling);
+        polling = null;
+    }
     let timer = null;
-    let poll = async ()=>{
+    async function poll(){
         try{
             const resp = await fetch(API+`/status/${task_id}`);
             if(!resp.ok){
                 showResult({error:"任务查询失败..."});
                 clearInterval(timer);
+                polling = null;
                 return;
             }
             const data = await resp.json();
             if(data.status === 'failed'){
                 showResult({error:"任务失败: "+(data.detail||"未知错误")});
                 clearInterval(timer);
+                polling = null;
             }else if(data.status==='done'){
                 showResult({url:data.result_url, task_id});
                 clearInterval(timer);
+                polling = null;
             }else{
                 // 继续轮询
                 progressTxt.innerText = "图片生成中，请耐心等待...(状态："+data.status+")";
@@ -77,9 +84,10 @@ function pollTask(task_id){
         }catch(e){
             showResult({error:"状态轮询异常."});
             clearInterval(timer);
+            polling = null;
         }
     }
-    poll(); // 首次立即poll
+    poll();
     timer = setInterval(poll, 2100);
     polling = timer;
 }
