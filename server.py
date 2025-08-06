@@ -46,8 +46,8 @@ def make_sure_model():
     # 若均没有则自动下载
     print("Model not found. Running /root/download_model.sh ...")
     code = subprocess.call(['bash', '/root/download_model.sh'])
-    if code != 0:
-        raise RuntimeError('/root/download_model.sh failed!')
+    # if code != 0:
+    #     raise RuntimeError('/root/download_model.sh failed!')
     for path in MODEL_PATHS:
         if os.path.exists(path):
             print(f"Downloaded and using model: {path}")
