@@ -138,7 +138,7 @@ def safe_load_pipe(model_path, cpu_offload):
         transformer = QwenImageTransformer2DModel.from_config(
             QwenImageTransformer2DModel.load_config(
                 "Qwen/Qwen-Image", subfolder="transformer",local_files_only=True
-            ),
+            ),local_files_only=True
         ).to(torch.bfloat16)
     
     DFloat11Model.from_pretrained(
