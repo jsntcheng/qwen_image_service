@@ -142,7 +142,7 @@ def safe_load_pipe(model_path, cpu_offload):
         ).to(torch.bfloat16)
     
     DFloat11Model.from_pretrained(
-        "DFloat11/Qwen-Image-DF11",
+        "/root/DFloat11__Qwen-Image-DF11",
         device="cpu",
         cpu_offload=cpu_offload,
         pin_memory=False,
